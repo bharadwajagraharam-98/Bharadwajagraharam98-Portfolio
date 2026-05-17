@@ -6,23 +6,18 @@ interface Node {
   vx: number;
   vy: number;
   radius: number;
-  type: 'hub' | 'relay' | 'leaf';
   pulse: number;
   pulseSpeed: number;
 }
 
-interface Edge {
-  a: number;
-  b: number;
-  activity: number;
-  active: boolean;
-  speed: number;
-}
-
 const COLOR = '255,255,255';
+const MAX_DIST = 200;       // max distance to draw a line between nodes
+const MOUSE_RADIUS = 150;   // cursor interaction radius
+const NODE_COUNT_DIVISOR = 18000; // lower = more nodes, higher = fewer
 
 export default function NetworkBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -31,56 +26,36 @@ export default function NetworkBackground() {
     if (!ctx) return;
 
     let nodes: Node[] = [];
-    let edges: Edge[] = [];
     let animId: number;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = document.documentElement.scrollHeight;
+      build();
     };
 
     const build = () => {
       nodes = [];
-      edges = [];
-      const w = canvas.width;
-      const h = canvas.height;
-
-      const hubCount   = Math.max(4, Math.floor(w / 350));
-      const relayCount = hubCount * 2;
-      const leafCount  = hubCount * 5;
-
-      const makeNode = (type: Node['type']): Node => ({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * (type === 'hub' ? 0.2 : type === 'relay' ? 0.35 : 0.55),
-        vy: (Math.random() - 0.5) * (type === 'hub' ? 0.2 : type === 'relay' ? 0.35 : 0.55),
-        radius: type === 'hub' ? 5 : type === 'relay' ? 3 : 2,
-        type,
-        pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.015 + Math.random() * 0.02,
-      });
-
-      for (let i = 0; i < hubCount; i++)   nodes.push(makeNode('hub'));
-      for (let i = 0; i < relayCount; i++) nodes.push(makeNode('relay'));
-      for (let i = 0; i < leafCount; i++)  nodes.push(makeNode('leaf'));
-
-      // Connect every node to every other node (full mesh)
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          edges.push({
-            a: i,
-            b: j,
-            activity: Math.random(),
-            active: Math.random() > 0.6,
-            speed: 0.003 + Math.random() * 0.008,
-          });
-        }
+      const area = canvas.width * canvas.height;
+      const count = Math.max(30, Math.floor(area / NODE_COUNT_DIVISOR));
+      for (let i = 0; i < count; i++) {
+        nodes.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          radius: 1.5 + Math.random() * 2,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.012 + Math.random() * 0.018,
+        });
       }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const mouse = mouseRef.current;
 
+      // Move nodes
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
@@ -89,103 +64,85 @@ export default function NetworkBackground() {
         n.pulse += n.pulseSpeed;
       }
 
-      // Draw edges
-      for (const e of edges) {
-        const na = nodes[e.a];
-        const nb = nodes[e.b];
-        const dx = nb.x - na.x;
-        const dy = nb.y - na.y;
+      // Draw edges between nearby nodes
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const na = nodes[i];
+          const nb = nodes[j];
+          const dx = nb.x - na.x;
+          const dy = nb.y - na.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > MAX_DIST) continue;
 
-        // Line opacity by tier
-        const alpha = na.type === 'hub' ? 0.55 : na.type === 'relay' ? 0.35 : 0.22;
-
-        ctx.beginPath();
-        ctx.moveTo(na.x, na.y);
-        ctx.lineTo(nb.x, nb.y);
-        ctx.strokeStyle = `rgba(${COLOR},${alpha})`;
-        ctx.lineWidth = na.type === 'hub' ? 1.4 : 0.8;
-        ctx.stroke();
-
-        // Animated data packet
-        if (e.active) {
-          e.activity = (e.activity + e.speed) % 1;
-          const px = na.x + dx * e.activity;
-          const py = na.y + dy * e.activity;
-          const packetR = na.type === 'hub' ? 2.5 : 1.8;
-
-          // Glow
-          const grd = ctx.createRadialGradient(px, py, 0, px, py, packetR * 4);
-          grd.addColorStop(0, `rgba(${COLOR},0.7)`);
-          grd.addColorStop(1, `rgba(${COLOR},0)`);
+          const alpha = (1 - dist / MAX_DIST) * 0.45;
           ctx.beginPath();
-          ctx.arc(px, py, packetR * 4, 0, Math.PI * 2);
-          ctx.fillStyle = grd;
-          ctx.fill();
-
-          // Core
-          ctx.beginPath();
-          ctx.arc(px, py, packetR, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${COLOR},1)`;
-          ctx.fill();
-
-          // Trail
-          const trailStart = Math.max(0, e.activity - 0.08);
-          const tsx = na.x + dx * trailStart;
-          const tsy = na.y + dy * trailStart;
-          const trailGrad = ctx.createLinearGradient(tsx, tsy, px, py);
-          trailGrad.addColorStop(0, `rgba(${COLOR},0)`);
-          trailGrad.addColorStop(1, `rgba(${COLOR},0.85)`);
-          ctx.beginPath();
-          ctx.moveTo(tsx, tsy);
-          ctx.lineTo(px, py);
-          ctx.strokeStyle = trailGrad;
-          ctx.lineWidth = na.type === 'hub' ? 2.5 : 1.6;
+          ctx.moveTo(na.x, na.y);
+          ctx.lineTo(nb.x, nb.y);
+          ctx.strokeStyle = `rgba(${COLOR},${alpha})`;
+          ctx.lineWidth = 0.8;
           ctx.stroke();
         }
+      }
+
+      // Mouse interaction: draw lines from cursor to nearby nodes
+      if (mouse) {
+        for (const n of nodes) {
+          const dx = n.x - mouse.x;
+          const dy = n.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > MOUSE_RADIUS) continue;
+
+          const alpha = (1 - dist / MOUSE_RADIUS) * 0.85;
+          ctx.beginPath();
+          ctx.moveTo(mouse.x, mouse.y);
+          ctx.lineTo(n.x, n.y);
+          ctx.strokeStyle = `rgba(${COLOR},${alpha})`;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+
+        // Cursor dot
+        ctx.beginPath();
+        ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${COLOR},0.9)`;
+        ctx.fill();
       }
 
       // Draw nodes
       for (const n of nodes) {
         const pf = 0.75 + 0.25 * Math.sin(n.pulse);
         const r = n.radius * pf;
-
-        if (n.type !== 'leaf') {
-          const rings = n.type === 'hub' ? 2 : 1;
-          for (let ring = 0; ring < rings; ring++) {
-            const ringR = r * (5 + ring * 3);
-            const ringAlpha = (0.18 - ring * 0.06) * pf;
-            const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, ringR);
-            grd.addColorStop(0, `rgba(${COLOR},${ringAlpha})`);
-            grd.addColorStop(1, `rgba(${COLOR},0)`);
-            ctx.beginPath();
-            ctx.arc(n.x, n.y, ringR, 0, Math.PI * 2);
-            ctx.fillStyle = grd;
-            ctx.fill();
-          }
-        }
-
         ctx.beginPath();
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${COLOR},1)`;
+        ctx.fillStyle = `rgba(${COLOR},0.85)`;
         ctx.fill();
-
-        if (n.type === 'hub') {
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, r * 0.4, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(255,255,255,0.8)';
-          ctx.fill();
-        }
       }
 
       animId = requestAnimationFrame(draw);
     };
 
-    const onResize = () => { resize(); build(); };
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
+    };
+    const onMouseLeave = () => { mouseRef.current = null; };
+    const onScroll = () => {
+      // keep mouse position synced when scrolling
+    };
+
     resize();
-    build();
     draw();
-    window.addEventListener('resize', onResize);
-    return () => { cancelAnimationFrame(animId); window.removeEventListener('resize', onResize); };
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseleave', onMouseLeave);
+    window.addEventListener('scroll', onScroll);
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   return (
