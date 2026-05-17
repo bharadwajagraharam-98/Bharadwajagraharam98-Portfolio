@@ -82,6 +82,9 @@ Deno.serve(async (req: Request) => {
         }),
       });
 
+      const resendBody = await emailRes.text();
+      console.log("Resend status:", emailRes.status, "| body:", resendBody);
+
       if (emailRes.ok) {
         await supabase
           .from("contact_messages")
@@ -90,7 +93,7 @@ Deno.serve(async (req: Request) => {
           .order("created_at", { ascending: false })
           .limit(1);
       } else {
-        console.error("Resend error:", await emailRes.text());
+        console.error("Resend rejected:", resendBody);
       }
     }
 
