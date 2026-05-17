@@ -30,7 +30,7 @@ export default function NetworkBackground() {
 
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = document.documentElement.scrollHeight;
+      canvas.height = window.innerHeight;
       build();
     };
 
@@ -122,26 +122,21 @@ export default function NetworkBackground() {
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
+      mouseRef.current = { x: e.clientX, y: e.clientY };
     };
     const onMouseLeave = () => { mouseRef.current = null; };
-    const onScroll = () => {
-      // keep mouse position synced when scrolling
-    };
 
     resize();
     draw();
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseleave', onMouseLeave);
-    window.addEventListener('scroll', onScroll);
 
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
-      window.removeEventListener('scroll', onScroll);
     };
   }, []);
 
