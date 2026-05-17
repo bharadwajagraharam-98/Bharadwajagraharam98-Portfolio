@@ -27,7 +27,7 @@ export default function App() {
 
       <NetworkBackground />
 
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1, background: 'rgba(2,6,23,0.52)' }} />
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 1, background: 'rgba(2,6,23,0.22)' }} />
 
       <div className="relative" style={{ zIndex: 10 }}>
         <Navigation />

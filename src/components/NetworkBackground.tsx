@@ -126,14 +126,14 @@ export default function NetworkBackground() {
         const dy = nb.y - na.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        const tierAlpha = na.type === 'hub' ? 0.45 : na.type === 'relay' ? 0.28 : 0.18;
+        const tierAlpha = na.type === 'hub' ? 0.85 : na.type === 'relay' ? 0.60 : 0.40;
 
         // Static line
         ctx.beginPath();
         ctx.moveTo(na.x, na.y);
         ctx.lineTo(nb.x, nb.y);
         ctx.strokeStyle = `rgba(${na.color},${tierAlpha})`;
-        ctx.lineWidth = na.type === 'hub' ? 1.0 : 0.6;
+        ctx.lineWidth = na.type === 'hub' ? 1.8 : 1.1;
         ctx.stroke();
 
         // Animated data packet travelling along edge
@@ -155,22 +155,22 @@ export default function NetworkBackground() {
           // Packet core
           ctx.beginPath();
           ctx.arc(px, py, packetR, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${na.color},0.95)`;
+          ctx.fillStyle = `rgba(${na.color},1)`;
           ctx.fill();
 
           // Trail
-          const trailLen = 0.06;
+          const trailLen = 0.08;
           const trailStart = Math.max(0, e.activity - trailLen);
           const tsx = na.x + dx * trailStart;
           const tsy = na.y + dy * trailStart;
           const trailGrad = ctx.createLinearGradient(tsx, tsy, px, py);
           trailGrad.addColorStop(0, `rgba(${na.color},0)`);
-          trailGrad.addColorStop(1, `rgba(${na.color},0.55)`);
+          trailGrad.addColorStop(1, `rgba(${na.color},0.85)`);
           ctx.beginPath();
           ctx.moveTo(tsx, tsy);
           ctx.lineTo(px, py);
           ctx.strokeStyle = trailGrad;
-          ctx.lineWidth = na.type === 'hub' ? 1.5 : 1;
+          ctx.lineWidth = na.type === 'hub' ? 2.5 : 1.6;
           ctx.stroke();
         }
       }
@@ -199,7 +199,7 @@ export default function NetworkBackground() {
         // Node core
         ctx.beginPath();
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${n.color},${n.type === 'hub' ? 1.0 : n.type === 'relay' ? 0.85 : 0.7})`;
+        ctx.fillStyle = `rgba(${n.color},1)`;
         ctx.fill();
 
         // Bright centre dot for hubs
