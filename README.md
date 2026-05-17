@@ -8,7 +8,7 @@
 
 - 📫 How to reach me **bharadwajagraharam98@gmail.com**
 
-- ⚡ Fun fact **I see things , I learn things**
+- ⚡ Fun fact **I see things, I learn things**
 
 <h3 align="left">Connect with me:</h3>
 <p align="left">
