@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 import { resumeData } from '../../data/resume';
 import { SectionHeader } from './About';
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL as string,
+  import.meta.env.VITE_SUPABASE_ANON_KEY as string
+);
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
@@ -19,35 +25,20 @@ export default function Contact() {
     setStatus('sending');
     setErrorMsg('');
 
-    try {
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const { error } = await supabase
+      .from('contact_messages')
+      .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/send-contact-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-        },
-        body: JSON.stringify({ name, email, message }),
-      });
-
-      const text = await res.text();
-      let data: { error?: string; success?: boolean } = {};
-      try { data = JSON.parse(text); } catch { /* non-JSON response */ }
-
-      if (!res.ok || data.error) {
-        throw new Error(data.error || `Server error (${res.status}). Please try again.`);
-      }
-
-      setStatus('success');
-      setName('');
-      setEmail('');
-      setMessage('');
-    } catch (err: unknown) {
+    if (error) {
       setStatus('error');
-      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setErrorMsg('Failed to send. Please email me directly at ' + resumeData.email);
+      return;
     }
+
+    setStatus('success');
+    setName('');
+    setEmail('');
+    setMessage('');
   };
 
   const inputStyle = {
