@@ -39,8 +39,7 @@ export default function Experience() {
                     onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = `${color}44`; (e.currentTarget as HTMLDivElement).style.boxShadow = `0 20px 50px rgba(0,0,0,0.4)`; }}
                     onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
                   >
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 sm:gap-3 mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1.5 sm:gap-3">
                       <div>
                         <h3 className="font-bold text-white mb-1" style={{ fontSize: 'clamp(1rem, 3vw, 1.2rem)' }}>{job.title}</h3>
                         <div className="flex items-center gap-1.5">
@@ -57,15 +56,6 @@ export default function Experience() {
                         </div>
                       </div>
                     </div>
-
-                    <ul className="space-y-2.5">
-                      {job.bullets.map((bullet, j) => (
-                        <li key={j} className="flex items-start gap-2.5 sm:gap-3 text-slate-300 text-sm leading-relaxed">
-                          <span className="flex-shrink-0 mt-2 w-1.5 h-1.5 rounded-full" style={{ background: color, opacity: 0.8 }} />
-                          {bullet}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
               );
