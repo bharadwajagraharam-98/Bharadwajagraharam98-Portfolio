@@ -1,0 +1,2 @@
+-- This migration is intentionally empty.
+-- RESEND_API_KEY is set via Edge Function secrets, not via SQL.
