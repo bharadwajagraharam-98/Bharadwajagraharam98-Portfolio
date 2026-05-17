@@ -5,7 +5,8 @@ export const resumeData = {
   email: 'bharadwajagraharam98@gmail.com',
   phone: '+44 7587 740190',
   location: 'Coventry, UK',
-  linkedin: '',
+  linkedin: 'https://www.linkedin.com/in/bharadwaj-agraharam-363458240',
+  github: 'https://github.com/bharadwajagraharam-98',
   summary:
     'Cybersecurity postgraduate with hands-on experience in Security Operations Centre (SOC) monitoring, alert triage, and incident analysis. Skilled in identifying security threats, analysing system anomalies, and supporting incident response within SLA-driven environments. Strong foundation in risk assessment, digital forensics, and security governance (ISO 27001, GDPR). Proficient with SIEM tools including Splunk, and experienced in using threat intelligence platforms such as TryHackMe and LetsDefend. Seeking an entry-level SOC Analyst role to contribute to threat detection and organisational security.',
 

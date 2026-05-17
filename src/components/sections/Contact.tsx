@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, AlertCircle, Loader, Linkedin, Github } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { resumeData } from '../../data/resume';
 import { SectionHeader } from './About';
@@ -70,7 +70,9 @@ export default function Contact() {
             {[
               { icon: <Mail size={19} />, label: 'Email', value: resumeData.email, href: `mailto:${resumeData.email}`, color: '#38bdf8' },
               { icon: <Phone size={19} />, label: 'Phone', value: resumeData.phone, href: `tel:${resumeData.phone.replace(/\s/g, '')}`, color: '#818cf8' },
-              { icon: <MapPin size={19} />, label: 'Location', value: resumeData.location, href: undefined, color: '#34d399' },
+              { icon: <Linkedin size={19} />, label: 'LinkedIn', value: 'bharadwaj-agraharam', href: resumeData.linkedin, color: '#0ea5e9' },
+              { icon: <Github size={19} />, label: 'GitHub', value: 'bharadwajagraharam-98', href: resumeData.github, color: '#34d399' },
+              { icon: <MapPin size={19} />, label: 'Location', value: resumeData.location, href: undefined, color: '#94a3b8' },
             ].map(({ icon, label, value, href, color }) => {
               const inner = (
                 <div
