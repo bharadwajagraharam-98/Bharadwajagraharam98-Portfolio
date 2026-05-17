@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle, AlertCircle, Loader, Linkedin, Github } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
 import { resumeData } from '../../data/resume';
 import { SectionHeader } from './About';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_ANON_KEY as string
-);
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
@@ -25,20 +19,31 @@ export default function Contact() {
     setStatus('sending');
     setErrorMsg('');
 
-    const { error } = await supabase
-      .from('contact_messages')
-      .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+        }
+      );
 
-    if (error) {
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      setStatus('success');
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch {
       setStatus('error');
       setErrorMsg('Failed to send. Please email me directly at ' + resumeData.email);
-      return;
     }
-
-    setStatus('success');
-    setName('');
-    setEmail('');
-    setMessage('');
   };
 
   const inputStyle = {
