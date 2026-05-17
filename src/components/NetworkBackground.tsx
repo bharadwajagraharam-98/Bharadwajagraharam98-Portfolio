@@ -11,13 +11,19 @@ interface Node {
 }
 
 const COLOR = '255,255,255';
-const MAX_DIST = 200;
+const MAX_DIST = 180;
+const TOUCH_RADIUS = 140;
 const MOUSE_RADIUS = 150;
-const NODE_COUNT_DIVISOR = 18000;
+const NODE_COUNT_DIVISOR = 15000;
+const VIRTUAL_HEIGHT_MULTIPLIER = 4;
+
+function getScrollY(): number {
+  return window.scrollY ?? document.documentElement.scrollTop ?? 0;
+}
 
 export default function NetworkBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef<{ x: number; y: number } | null>(null);
+  const pointerRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -27,21 +33,23 @@ export default function NetworkBackground() {
 
     let nodes: Node[] = [];
     let animId: number;
+    let vh = 0;
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      vh = canvas.height * VIRTUAL_HEIGHT_MULTIPLIER;
       build();
     };
 
     const build = () => {
       nodes = [];
-      const area = canvas.width * canvas.height;
-      const count = Math.max(60, Math.floor(area / NODE_COUNT_DIVISOR));
+      const area = canvas.width * vh;
+      const count = Math.max(50, Math.floor(area / (NODE_COUNT_DIVISOR * VIRTUAL_HEIGHT_MULTIPLIER)));
       for (let i = 0; i < count; i++) {
         nodes.push({
           x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height * 3,
+          y: Math.random() * vh,
           vx: (Math.random() - 0.5) * 0.4,
           vy: (Math.random() - 0.5) * 0.4,
           radius: 1.5 + Math.random() * 2,
@@ -51,13 +59,10 @@ export default function NetworkBackground() {
       }
     };
 
-    const virtualHeight = () => canvas.height * 3;
-
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const scrollY = window.scrollY;
-      const mouse = mouseRef.current;
-      const vh = virtualHeight();
+      const scrollY = getScrollY();
+      const pointer = pointerRef.current;
 
       for (const n of nodes) {
         n.x += n.vx;
@@ -70,10 +75,10 @@ export default function NetworkBackground() {
       ctx.save();
       ctx.translate(0, -scrollY);
 
-      // Edges between nearby nodes (only draw those visible on screen)
       const visibleTop = scrollY - MAX_DIST;
       const visibleBottom = scrollY + canvas.height + MAX_DIST;
 
+      // Edges
       for (let i = 0; i < nodes.length; i++) {
         const na = nodes[i];
         if (na.y < visibleTop || na.y > visibleBottom) continue;
@@ -95,17 +100,18 @@ export default function NetworkBackground() {
         }
       }
 
-      // Mouse interaction — mouse coords are in page-space
-      if (mouse) {
+      // Pointer (mouse or touch) interaction in page-space
+      if (pointer) {
+        const radius = ('ontouchstart' in window) ? TOUCH_RADIUS : MOUSE_RADIUS;
         for (const n of nodes) {
-          const dx = n.x - mouse.x;
-          const dy = n.y - mouse.y;
+          const dx = n.x - pointer.x;
+          const dy = n.y - pointer.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist > MOUSE_RADIUS) continue;
+          if (dist > radius) continue;
 
-          const alpha = (1 - dist / MOUSE_RADIUS) * 0.85;
+          const alpha = (1 - dist / radius) * 0.85;
           ctx.beginPath();
-          ctx.moveTo(mouse.x, mouse.y);
+          ctx.moveTo(pointer.x, pointer.y);
           ctx.lineTo(n.x, n.y);
           ctx.strokeStyle = `rgba(${COLOR},${alpha})`;
           ctx.lineWidth = 1.2;
@@ -113,11 +119,12 @@ export default function NetworkBackground() {
         }
 
         ctx.beginPath();
-        ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
+        ctx.arc(pointer.x, pointer.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${COLOR},0.9)`;
         ctx.fill();
       }
 
+      // Nodes
       for (const n of nodes) {
         if (n.y < visibleTop || n.y > visibleBottom) continue;
         const pf = 0.75 + 0.25 * Math.sin(n.pulse);
@@ -129,27 +136,40 @@ export default function NetworkBackground() {
       }
 
       ctx.restore();
-
       animId = requestAnimationFrame(draw);
     };
 
-    // Store mouse in page coordinates (clientY + scrollY)
     const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
+      pointerRef.current = { x: e.clientX, y: e.clientY + getScrollY() };
     };
-    const onMouseLeave = () => { mouseRef.current = null; };
+    const onMouseLeave = () => { pointerRef.current = null; };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t) pointerRef.current = { x: t.clientX, y: t.clientY + getScrollY() };
+    };
+    const onTouchEnd = () => { pointerRef.current = null; };
 
     resize();
     draw();
+
     window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', resize);
     window.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseleave', onMouseLeave);
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('touchcancel', onTouchEnd);
 
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', resize);
+      window.removeEventListener('orientationchange', resize);
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
     };
   }, []);
 
