@@ -154,7 +154,9 @@ export default function Hero() {
 
           <a
             href="/Bharadwaj_Agraharam_Resume.pdf"
-            download
+            download="Bharadwaj_Agraharam_Resume.pdf"
+            target="_blank"
+            rel="noreferrer"
             className="flex items-center gap-2.5 px-8 py-3.5 rounded-xl font-semibold text-slate-200 transition-all duration-300 hover:-translate-y-1 hover:text-white"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(10px)' }}
             onMouseEnter={(e) => {
