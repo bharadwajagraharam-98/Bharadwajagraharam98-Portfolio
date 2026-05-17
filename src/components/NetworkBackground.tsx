@@ -11,9 +11,9 @@ interface Node {
 }
 
 const COLOR = '255,255,255';
-const MAX_DIST = 200;       // max distance to draw a line between nodes
-const MOUSE_RADIUS = 150;   // cursor interaction radius
-const NODE_COUNT_DIVISOR = 18000; // lower = more nodes, higher = fewer
+const MAX_DIST = 200;
+const MOUSE_RADIUS = 150;
+const NODE_COUNT_DIVISOR = 18000;
 
 export default function NetworkBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,16 +28,18 @@ export default function NetworkBackground() {
     let nodes: Node[] = [];
     let animId: number;
 
+    const getPageHeight = () => document.documentElement.scrollHeight;
+
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = getPageHeight();
       build();
     };
 
     const build = () => {
       nodes = [];
       const area = canvas.width * canvas.height;
-      const count = Math.max(30, Math.floor(area / NODE_COUNT_DIVISOR));
+      const count = Math.max(60, Math.floor(area / NODE_COUNT_DIVISOR));
       for (let i = 0; i < count; i++) {
         nodes.push({
           x: Math.random() * canvas.width,
@@ -53,9 +55,9 @@ export default function NetworkBackground() {
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // mouse in page coordinates
       const mouse = mouseRef.current;
 
-      // Move nodes
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
@@ -64,7 +66,7 @@ export default function NetworkBackground() {
         n.pulse += n.pulseSpeed;
       }
 
-      // Draw edges between nearby nodes
+      // Edges between nearby nodes
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
           const na = nodes[i];
@@ -84,7 +86,7 @@ export default function NetworkBackground() {
         }
       }
 
-      // Mouse interaction: draw lines from cursor to nearby nodes
+      // Mouse interaction — coords are page-space so comparison is direct
       if (mouse) {
         for (const n of nodes) {
           const dx = n.x - mouse.x;
@@ -101,14 +103,12 @@ export default function NetworkBackground() {
           ctx.stroke();
         }
 
-        // Cursor dot
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${COLOR},0.9)`;
         ctx.fill();
       }
 
-      // Draw nodes
       for (const n of nodes) {
         const pf = 0.75 + 0.25 * Math.sin(n.pulse);
         const r = n.radius * pf;
@@ -121,10 +121,18 @@ export default function NetworkBackground() {
       animId = requestAnimationFrame(draw);
     };
 
+    // Store mouse in page coordinates (clientY + scrollY)
     const onMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
+      mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
     };
     const onMouseLeave = () => { mouseRef.current = null; };
+
+    // Rebuild when page height changes (content loads, sections expand)
+    const resizeObserver = new ResizeObserver(() => {
+      const newH = getPageHeight();
+      if (newH !== canvas.height) resize();
+    });
+    resizeObserver.observe(document.documentElement);
 
     resize();
     draw();
@@ -137,14 +145,15 @@ export default function NetworkBackground() {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
+      resizeObserver.disconnect();
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 0 }}
+      className="absolute inset-0 w-full pointer-events-none"
+      style={{ zIndex: 0, top: 0, left: 0 }}
     />
   );
 }
