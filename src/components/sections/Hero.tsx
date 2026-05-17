@@ -115,9 +115,9 @@ export default function Hero() {
         <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400 text-sm mb-5">
           <span className="flex items-center gap-1.5"><MapPin size={13} className="text-sky-400" />{resumeData.location}</span>
           <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-600" />
-          <span className="flex items-center gap-1.5"><Phone size={13} className="text-sky-400" />{resumeData.phone}</span>
+          <a href={`tel:${resumeData.phone.replace(/\s/g, '')}`} className="flex items-center gap-1.5 hover:text-sky-300 transition-colors"><Phone size={13} className="text-sky-400" />{resumeData.phone}</a>
           <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-600" />
-          <span className="flex items-center gap-1.5"><Mail size={13} className="text-sky-400" />{resumeData.email}</span>
+          <a href={`mailto:${resumeData.email}`} className="flex items-center gap-1.5 hover:text-sky-300 transition-colors"><Mail size={13} className="text-sky-400" />{resumeData.email}</a>
         </div>
 
         {/* Extras badges */}
