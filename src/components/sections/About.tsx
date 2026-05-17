@@ -33,13 +33,13 @@ const highlights = [
 
 export default function About() {
   return (
-    <section id="about" className="relative py-28 px-6">
+    <section id="about" className="relative py-16 sm:py-28 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto z-10 relative">
         <SectionHeader label="About Me" title="Who I Am" />
 
-        <div className="grid md:grid-cols-2 gap-14 items-start mt-16">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-14 items-start mt-12 sm:mt-16">
           <div>
-            <p className="text-slate-300 text-lg leading-relaxed mb-8">{resumeData.summary}</p>
+            <p className="text-slate-300 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8">{resumeData.summary}</p>
             <div className="space-y-3">
               {[
                 { icon: <MapPin size={15} />, text: resumeData.location, color: '#38bdf8' },
@@ -48,7 +48,7 @@ export default function About() {
               ].map(({ icon, text, color }) => (
                 <div key={text} className="flex items-center gap-3">
                   <span style={{ color }}>{icon}</span>
-                  <span className="text-slate-300 text-sm">{text}</span>
+                  <span className="text-slate-300 text-sm break-all sm:break-normal">{text}</span>
                 </div>
               ))}
             </div>
@@ -58,10 +58,10 @@ export default function About() {
             {highlights.map((h) => (
               <div
                 key={h.label}
-                className="shimmer-card flex items-start gap-4 p-5 rounded-2xl transition-all duration-300 hover:-translate-y-1"
+                className="shimmer-card flex items-start gap-4 p-4 sm:p-5 rounded-2xl transition-all duration-300 hover:-translate-y-1"
                 style={{ background: h.color, border: `1px solid ${h.border}`, backdropFilter: 'blur(12px)' }}
               >
-                <div className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: h.iconBg }}>
+                <div className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center" style={{ background: h.iconBg }}>
                   <h.icon size={20} style={{ color: h.iconColor }} />
                 </div>
                 <div>
@@ -84,11 +84,11 @@ export function SectionHeader({ label, title }: { label: string; title: string }
         style={{ background: 'linear-gradient(135deg,#38bdf8,#818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
         {label}
       </p>
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">{title}</h2>
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">{title}</h2>
       <div className="flex items-center justify-center gap-3">
-        <div className="h-px w-20 opacity-70" style={{ background: 'linear-gradient(90deg,transparent,#38bdf8)' }} />
+        <div className="h-px w-16 sm:w-20 opacity-70" style={{ background: 'linear-gradient(90deg,transparent,#38bdf8)' }} />
         <div className="w-2 h-2 rounded-full" style={{ background: 'linear-gradient(135deg,#38bdf8,#818cf8)', boxShadow: '0 0 10px rgba(56,189,248,0.8)' }} />
-        <div className="h-px w-20 opacity-70" style={{ background: 'linear-gradient(90deg,#818cf8,transparent)' }} />
+        <div className="h-px w-16 sm:w-20 opacity-70" style={{ background: 'linear-gradient(90deg,#818cf8,transparent)' }} />
       </div>
     </div>
   );

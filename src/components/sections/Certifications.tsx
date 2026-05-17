@@ -4,15 +4,15 @@ import { SectionHeader } from './About';
 
 export default function Certifications() {
   return (
-    <section id="certifications" className="relative py-28 px-6">
+    <section id="certifications" className="relative py-16 sm:py-28 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto z-10 relative">
         <SectionHeader label="Credentials" title="Certifications" />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-12 sm:mt-16">
           {resumeData.certifications.map((cert, i) => (
             <div
               key={i}
-              className="shimmer-card group relative p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2"
+              className="shimmer-card group relative p-5 sm:p-6 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-2"
               style={{
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.07)',
@@ -31,21 +31,21 @@ export default function Certifications() {
               <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${cert.color}`} />
 
               {/* Watermark number */}
-              <div className="absolute top-4 right-4 text-4xl font-bold select-none" style={{ color: 'rgba(255,255,255,0.03)' }}>
+              <div className="absolute top-4 right-4 text-3xl sm:text-4xl font-bold select-none pointer-events-none" style={{ color: 'rgba(255,255,255,0.03)' }}>
                 {String(i + 1).padStart(2, '0')}
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className={`flex-shrink-0 w-11 h-11 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center shadow-lg`}>
-                  <Award size={19} className="text-white" />
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className={`flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br ${cert.color} flex items-center justify-center shadow-lg`}>
+                  <Award size={18} className="text-white" />
                 </div>
-                <div>
-                  <h3 className="text-white font-semibold text-sm leading-snug mb-1.5 group-hover:text-sky-100 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-white font-semibold text-sm leading-snug mb-1.5 group-hover:text-sky-100 transition-colors pr-6">
                     {cert.name}
                   </h3>
                   <div className="flex items-center gap-1.5">
                     <span className="text-slate-400 text-xs">{cert.issuer}</span>
-                    <ExternalLink size={10} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+                    <ExternalLink size={10} className="text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
                   </div>
                 </div>
               </div>

@@ -11,17 +11,17 @@ const CATEGORY_STYLES: Record<string, { gradient: string; border: string; tag: s
 
 export default function Skills() {
   return (
-    <section id="skills" className="relative py-28 px-6">
+    <section id="skills" className="relative py-16 sm:py-28 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto z-10 relative">
         <SectionHeader label="Technical Expertise" title="Skills & Tools" />
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-12 sm:mt-16">
           {Object.entries(resumeData.skills).map(([category, items]) => {
             const s = CATEGORY_STYLES[category] ?? { gradient: 'rgba(255,255,255,0.04)', border: 'rgba(255,255,255,0.1)', tag: 'rgba(255,255,255,0.08)', tagText: '#94a3b8' };
             return (
               <div
                 key={category}
-                className="shimmer-card group p-6 rounded-2xl transition-all duration-300 hover:-translate-y-2"
+                className="shimmer-card group p-5 sm:p-6 rounded-2xl transition-all duration-300 hover:-translate-y-2"
                 style={{
                   background: s.gradient,
                   border: `1px solid ${s.border}`,

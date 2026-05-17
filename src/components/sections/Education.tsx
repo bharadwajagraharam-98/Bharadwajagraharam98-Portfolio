@@ -9,31 +9,31 @@ const EDU_ACCENTS = [
 
 export default function Education() {
   return (
-    <section id="education" className="relative py-28 px-6">
+    <section id="education" className="relative py-16 sm:py-28 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto z-10 relative">
         <SectionHeader label="Academic Background" title="Education" />
 
-        <div className="mt-16 space-y-6">
+        <div className="mt-12 sm:mt-16 space-y-5 sm:space-y-6">
           {resumeData.education.map((edu, i) => {
             const a = EDU_ACCENTS[i % EDU_ACCENTS.length];
             return (
               <div
                 key={i}
-                className="shimmer-card group flex flex-col md:flex-row items-start gap-6 p-7 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                className="shimmer-card group flex flex-col sm:flex-row items-start gap-4 sm:gap-6 p-5 sm:p-7 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
                 style={{ background: a.bg, border: `1px solid ${a.border}`, backdropFilter: 'blur(16px)' }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = `0 20px 50px rgba(0,0,0,0.4), 0 0 30px ${a.border}`; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
               >
                 <div
-                  className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
+                  className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center"
                   style={{ background: `${a.badge}`, border: `1px solid ${a.border}` }}
                 >
-                  <GraduationCap size={26} style={{ color: a.icon }} />
+                  <GraduationCap size={24} style={{ color: a.icon }} />
                 </div>
-                <div className="flex-grow">
-                  <h3 className="text-xl font-bold text-white mb-1">{edu.degree}</h3>
-                  <p className="font-semibold mb-3" style={{ color: a.icon }}>{edu.school}</p>
-                  <div className="flex flex-wrap gap-4 mb-3">
+                <div className="flex-grow min-w-0">
+                  <h3 className="text-lg sm:text-xl font-bold text-white mb-1 leading-snug">{edu.degree}</h3>
+                  <p className="font-semibold mb-3 text-sm sm:text-base" style={{ color: a.icon }}>{edu.school}</p>
+                  <div className="flex flex-wrap gap-3 sm:gap-4 mb-3">
                     <div className="flex items-center gap-1.5 text-slate-400 text-sm">
                       <Calendar size={13} /><span>{edu.period}</span>
                     </div>
