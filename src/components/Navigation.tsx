@@ -147,8 +147,10 @@ export default function Navigation() {
         {/* Right side: Download CV */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="/Bharadwaj_Agraharam_CV.pdf"
-            download
+            href="/Bharadwaj_Agraharam_Resume.pdf"
+            download="Bharadwaj_Agraharam_Resume.pdf"
+            target="_blank"
+            rel="noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5"
             style={{
               background: 'linear-gradient(135deg,rgba(14,165,233,0.15),rgba(99,102,241,0.15))',
@@ -230,8 +232,10 @@ export default function Navigation() {
           ))}
           <li className="mt-2">
             <a
-              href="/Bharadwaj_Agraharam_CV.pdf"
-              download
+              href="/Bharadwaj_Agraharam_Resume.pdf"
+              download="Bharadwaj_Agraharam_Resume.pdf"
+              target="_blank"
+              rel="noreferrer"
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
               style={{
                 background: 'linear-gradient(135deg,rgba(14,165,233,0.15),rgba(99,102,241,0.15))',
