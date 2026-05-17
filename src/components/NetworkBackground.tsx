@@ -21,9 +21,9 @@ interface Edge {
 }
 
 const PALETTE = {
-  hub:   '14,165,233',   // bright cyan-blue
-  relay: '99,102,241',   // blue
-  leaf:  '52,211,153',   // emerald
+  hub:   '255,255,255',
+  relay: '255,255,255',
+  leaf:  '255,255,255',
 };
 
 export default function NetworkBackground() {
@@ -126,7 +126,7 @@ export default function NetworkBackground() {
         const dy = nb.y - na.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        const tierAlpha = na.type === 'hub' ? 0.22 : na.type === 'relay' ? 0.14 : 0.09;
+        const tierAlpha = na.type === 'hub' ? 0.45 : na.type === 'relay' ? 0.28 : 0.18;
 
         // Static line
         ctx.beginPath();
@@ -155,7 +155,7 @@ export default function NetworkBackground() {
           // Packet core
           ctx.beginPath();
           ctx.arc(px, py, packetR, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${na.color},0.9)`;
+          ctx.fillStyle = `rgba(${na.color},0.95)`;
           ctx.fill();
 
           // Trail
@@ -165,7 +165,7 @@ export default function NetworkBackground() {
           const tsy = na.y + dy * trailStart;
           const trailGrad = ctx.createLinearGradient(tsx, tsy, px, py);
           trailGrad.addColorStop(0, `rgba(${na.color},0)`);
-          trailGrad.addColorStop(1, `rgba(${na.color},0.35)`);
+          trailGrad.addColorStop(1, `rgba(${na.color},0.55)`);
           ctx.beginPath();
           ctx.moveTo(tsx, tsy);
           ctx.lineTo(px, py);
@@ -199,7 +199,7 @@ export default function NetworkBackground() {
         // Node core
         ctx.beginPath();
         ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${n.color},${n.type === 'hub' ? 0.9 : n.type === 'relay' ? 0.75 : 0.6})`;
+        ctx.fillStyle = `rgba(${n.color},${n.type === 'hub' ? 1.0 : n.type === 'relay' ? 0.85 : 0.7})`;
         ctx.fill();
 
         // Bright centre dot for hubs
