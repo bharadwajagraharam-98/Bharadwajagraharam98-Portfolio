@@ -27,16 +27,17 @@ export default function Contact() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Apikey': supabaseKey,
+          'apikey': supabaseKey,
         },
         body: JSON.stringify({ name, email, message }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: { error?: string; success?: boolean } = {};
+      try { data = JSON.parse(text); } catch { /* non-JSON response */ }
 
       if (!res.ok || data.error) {
-        throw new Error(data.error || 'Failed to send message');
+        throw new Error(data.error || `Server error (${res.status}). Please try again.`);
       }
 
       setStatus('success');
