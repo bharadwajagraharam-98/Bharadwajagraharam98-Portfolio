@@ -28,11 +28,9 @@ export default function NetworkBackground() {
     let nodes: Node[] = [];
     let animId: number;
 
-    const getPageHeight = () => document.documentElement.scrollHeight;
-
     const resize = () => {
       canvas.width = window.innerWidth;
-      canvas.height = getPageHeight();
+      canvas.height = window.innerHeight;
       build();
     };
 
@@ -43,7 +41,7 @@ export default function NetworkBackground() {
       for (let i = 0; i < count; i++) {
         nodes.push({
           x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          y: Math.random() * canvas.height * 3,
           vx: (Math.random() - 0.5) * 0.4,
           vy: (Math.random() - 0.5) * 0.4,
           radius: 1.5 + Math.random() * 2,
@@ -53,24 +51,35 @@ export default function NetworkBackground() {
       }
     };
 
+    const virtualHeight = () => canvas.height * 3;
+
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // mouse in page coordinates
+      const scrollY = window.scrollY;
       const mouse = mouseRef.current;
+      const vh = virtualHeight();
 
       for (const n of nodes) {
         n.x += n.vx;
         n.y += n.vy;
-        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
-        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+        if (n.y < 0 || n.y > vh) n.vy *= -1;
         n.pulse += n.pulseSpeed;
       }
 
-      // Edges between nearby nodes
+      ctx.save();
+      ctx.translate(0, -scrollY);
+
+      // Edges between nearby nodes (only draw those visible on screen)
+      const visibleTop = scrollY - MAX_DIST;
+      const visibleBottom = scrollY + canvas.height + MAX_DIST;
+
       for (let i = 0; i < nodes.length; i++) {
+        const na = nodes[i];
+        if (na.y < visibleTop || na.y > visibleBottom) continue;
         for (let j = i + 1; j < nodes.length; j++) {
-          const na = nodes[i];
           const nb = nodes[j];
+          if (nb.y < visibleTop || nb.y > visibleBottom) continue;
           const dx = nb.x - na.x;
           const dy = nb.y - na.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -86,7 +95,7 @@ export default function NetworkBackground() {
         }
       }
 
-      // Mouse interaction — coords are page-space so comparison is direct
+      // Mouse interaction — mouse coords are in page-space
       if (mouse) {
         for (const n of nodes) {
           const dx = n.x - mouse.x;
@@ -110,6 +119,7 @@ export default function NetworkBackground() {
       }
 
       for (const n of nodes) {
+        if (n.y < visibleTop || n.y > visibleBottom) continue;
         const pf = 0.75 + 0.25 * Math.sin(n.pulse);
         const r = n.radius * pf;
         ctx.beginPath();
@@ -117,6 +127,8 @@ export default function NetworkBackground() {
         ctx.fillStyle = `rgba(${COLOR},0.85)`;
         ctx.fill();
       }
+
+      ctx.restore();
 
       animId = requestAnimationFrame(draw);
     };
@@ -126,13 +138,6 @@ export default function NetworkBackground() {
       mouseRef.current = { x: e.clientX, y: e.clientY + window.scrollY };
     };
     const onMouseLeave = () => { mouseRef.current = null; };
-
-    // Rebuild when page height changes (content loads, sections expand)
-    const resizeObserver = new ResizeObserver(() => {
-      const newH = getPageHeight();
-      if (newH !== canvas.height) resize();
-    });
-    resizeObserver.observe(document.documentElement);
 
     resize();
     draw();
@@ -145,15 +150,14 @@ export default function NetworkBackground() {
       window.removeEventListener('resize', resize);
       window.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseleave', onMouseLeave);
-      resizeObserver.disconnect();
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full pointer-events-none"
-      style={{ zIndex: 0, top: 0, left: 0 }}
+      className="fixed inset-0 w-full h-full pointer-events-none"
+      style={{ zIndex: 0 }}
     />
   );
 }
