@@ -53,7 +53,7 @@ export const resumeData = {
 
   experience: [
     {
-      title: 'SOC Analyst (Remote)',
+      title: 'SOC Analyst Intern (Remote)',
       company: 'Edvedha Pvt Ltd',
       location: 'Hyderabad, India',
       period: 'Sep 2024 – May 2025',
