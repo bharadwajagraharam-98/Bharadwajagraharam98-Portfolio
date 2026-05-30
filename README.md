@@ -1,6 +1,6 @@
 [![MasterHead](https://as1.ftcdn.net/jpg/02/52/22/54/1000_F_252225419_qp8PrnRuk5cOSyhEmuDXCTNYvfFq3xsj.jpg)]
 <h1 align="center">Hi 👋, I'm Bharadwaj Agraharam</h1>
-<h3 align="center">A passionate GRC Analyst</h3>
+<h3 align="center">A passionate Cybersecurity Analyst</h3>
 <img align="right" alt="Coding" width="400" src="https://camo.githubusercontent.com/61d655039bf8b853fa33d08f0237a83db2e5c78da6d564535a000e5825b8f6e7/68747470733a2f2f626c6f672e696d617274696375732e6f72672f77702d636f6e74656e742f75706c6f6164732f323032312f31322f646a62776766772e676966">
 
 
