@@ -1,6 +1,6 @@
 export const resumeData = {
   name: 'Bharadwaj Agraharam',
-  title: 'SOC Analyst',
+  title: 'Cybersecurity Analyst',
   subtitle: 'Cybersecurity Postgraduate | Threat Detection & Incident Response',
   email: 'bharadwajagraharam98@gmail.com',
   phone: '+44 7587 740190',
